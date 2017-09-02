@@ -1,5 +1,6 @@
 const request = require('request');
 const commander = require('commander');
+const parseHttpHeader = require('./parse-http-header');
 
 commander
     .option('-H,--header <text>')
@@ -9,12 +10,9 @@ commander
 commander.parse(process.argv);
 
 //parse header
-const headerSplit = commander.header.split(/: /);
-const headName = headerSplit[0].replace(/-./g,(s)=>s[1].toUpperCase(1)); //replace it to camelCase
-const headValue = headerSplit[1];
-
+const header = parseHttpHeader(commander.header);
 //add header into commander
-commander[headName] = headValue;
+commander[header.name] = header.value;
 
 console.log(commander);
 
@@ -23,6 +21,7 @@ const options = {
     method: commander.request,
     headers: {
         'User-Agent': commander.userAgent,
+        'Content-Type': commander.contentType
     },
     body: commander.data, 
 }
